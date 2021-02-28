@@ -2,7 +2,7 @@
 rtlamr-collect provides data aggregation for rtlamr. This tool in tandem with rtlamr provides easy and accurate data collection.
 
 ### Requirements
- * GoLang >=1.9.2 (Go build environment setup guide: http://golang.org/doc/code.html)
+ * GoLang >=1.13 (Go build environment setup guide: http://golang.org/doc/code.html)
  * rtlamr
  * InfluxDB >=1.4.2
 
@@ -13,22 +13,17 @@ Downloading and building rtlamr-collect is as easy as:
 
 This will produce the binary `$GOPATH/bin/rtlamr-collect`. For convenience it's common to add `$GOPATH/bin` to the path.
 
-Provisioning influxdb can be done using the included initial schema and Chronograf's explore tab and the queries given in `init.iql`.
-
-`init.iql` contains schema for creating the database `rtlamr` and three retention policies:
-
- * 1 week for initial data (default).
- * 30 days for 1 hour intervals.
- * 5 years for 1 day intervals.
-
-All data written by `rtlamr-collect` occurs in the `rtlamr` measurement.
-
 ### Usage
 rtlamr-collect is entirely configured through environment variables:
+ * `COLLECT_LOGLEVEL` Specifies what level of logging should be written to stderr, one of Panic, Fatal, Error, Warn, Info, Debug, Trace. Defaults to Info. Trace will print received messages.
+ * `COLLECT_INFLUXDB_DRYRUN` Receive data, but do not commit to InfluxDB.
  * `COLLECT_INFLUXDB_HOSTNAME=https://localhost:8086/` InfluxDB hostname to write data to.
- * `COLLECT_INFLUXDB_DATABASE=rtlamr` InfluxDB database to connect to.
- * `COLLECT_INFLUXDB_USER=username` InfluxDB username to authenticate with.
- * `COLLECT_INFLUXDB_PASS=password` InfluxDB password to authenticate with.
+ * `COLLECT_INFLUXDB_TOKEN=########` InfluxDB token with write access to bucket. When connecting to a v1.8 instance, the token is of the form: `username:password`
+ * `COLLECT_INFLUXDB_ORG=########` InfluxDB organization. When connecting to a v1.8 instance, provide an arbitrary value.
+ * `COLLECT_INFLUXDB_BUCKET=bucket_name` InfluxDB bucket to write data to. When connecting to a v1.8 instance, the bucket is of the form: `database/retention_policy`
+ * `COLLECT_INFLUXDB_MEASUREMENT=utilities` InfluxDB measurement data will be associated with.
+ * `COLLECT_INFLUXDB_CLIENT_CERT=influxdb.crt` (optional) X.509 certificate to use for InfluxDB TLS client authentication
+ * `COLLECT_INFLUXDB_CLIENT_KEY=influxdb.key` (optional) X.509 private key to use for InfluxDB TLS client authentication
  * `COLLECT_STRICTIDM=1` Ignores IDM with type 8 and NetIDM with type 7. This should probably always be enabled if you are simultaneously listening to IDM and NetIDM.
 
 At a minimum rtlamr must have the following environment variables defined:
